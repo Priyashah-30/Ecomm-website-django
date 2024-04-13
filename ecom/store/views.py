@@ -2,10 +2,10 @@ from django.shortcuts import render,redirect
 from .models import Product, Categories
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm
+# from django.contrib.auth.models import User
+# from django.contrib.auth.forms import UserCreationForm
 from .forms import SignUpForm
-from django import forms
+# from django import forms
 
 
 def category(request, foo):

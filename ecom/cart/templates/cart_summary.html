@@ -1,1 +1,140 @@
- cart symmary
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <!--header-->
+    <header class = "bg-dark py-5">
+        <div class="container px-4 px-lg-5 my-5">
+            <div class="text-center text-white">
+                <h1 class = "display-4 fw-bolder">
+                    Shopping Cart
+                </h1>
+                <p class = "lead fw-normal text-white-50 mb-0">
+                    View Your Cart...
+                </p>
+            </div>
+        </div>
+    </header>
+
+<div class="container">
+    <center>
+    {% comment %} {{ cart_products }} {% endcomment %}
+    {% if cart_products %}
+            {%for product in cart_products %}
+    <div class="card mb-3">
+        <div class="row g-0">
+          <div class="col-md-2">
+            <img src="{{ product.image.url }}" class="card-img" alt="...">
+          </div>
+          <div class="col-md-8">
+            <div class="card-body">
+              <h5 class="card-title">{{ product.name}}</h5>
+              <p class="card-text"><small class="text-muted">{{ product.category }}</small></p>
+              <p class="card-text">{{ product.description }}</p>
+              
+              {% if product.is_sale %}
+
+              <div class = "d-flex justify-content-center small text-warning mb-2">
+                <div class = "bi-star-fill"></div>
+                &nbsp; &nbsp; Sale &nbsp; &nbsp;
+                <div class = "bi-star-fill"></div>
+                </div>
+                
+                <!-- Product Price-->
+                <strike>
+                    {{ product.price }}
+                    </strike>
+                    &nbsp;
+                    {{ product.sale_price }}
+                    <br>
+                    ID: {{ product.id }}
+
+              {% else %}
+              <p class="card-text">{{ product.price }}</p>
+              <br>
+              ID: {{ product.id }}
+
+              {% endif %}
+              <br><br>
+                
+              <div class = "row-justify-content-center">
+                
+                
+                {% for key, value in quantities.items%}
+
+                    {% if key == product.id|slugify %} 
+                     {% comment %} the key we are getting is in str and product.id is int , so we can convert it in int using slugify {% endcomment %}
+                     Quantity: {{ value }}  
+                    {%endif%}
+
+                {% endfor %}
+                
+              
+              
+            
+          </div>
+
+            <br><br>
+
+            {% comment %} <a href = "{% url 'home' %}" class="btn btn-secondary">Home</a>
+            <button type = "button" data-index={"{{ product.id }}"} class="btn btn-secondary " id = "update-cart">Update</button>
+               {% endcomment %}
+
+               <button type = "button" data-index="{{product.id}}" class="btn btn-danger " id = "delete-product">Remove Item</button>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    {%endfor%}
+    <h3> Total: {{ totals  }}</h3>
+
+    <br><br><br>
+    {% else %}
+    <br><br>
+    <br>
+    <h3>There's Nothing in Your Cart...</h3>
+    <br><br>
+    <br><br><br><br><br><br>
+    <br><br>
+    <br><br>
+    {% endif %}
+
+    <a href = {% url 'home' %} class="btn btn-secondary">Home</a>
+
+    </center>
+</div>
+
+    <br><br>
+    <br><br><br><br><br><br>
+ 
+
+
+{% comment %} DELETE ITEM FROM THE CART {% endcomment %}
+    <script>
+        $(document).on('click', '#delete-product', function(e){
+            e.preventDefault();
+            //grab the product id 
+             var productid = $(this).data('index');
+            $.ajax({
+                type: 'POST',
+                url: '{% url 'cart_delete' %}',
+                data: {
+              product_id: $(this).data('index'),
+              csrfmiddlewaretoken: '{{ csrf_token }}',
+              action : 'post'
+                },
+                success: function(json){
+                   // console.log(json);
+                   // document.getElementById("cart_quantity").
+                   // textContent = json.qty
+                   location.reload();
+                },
+                error: function(xhr, errmsg, err){
+                }
+            });
+        })
+
+    </script>
+    {%endblock%}
